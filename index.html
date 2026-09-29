@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Madrid Unpacked — coming soon</title>
+<meta name="description" content="A first-hand guide to moving your family to Madrid's north side. Coming soon.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect x='6' y='22' width='52' height='36' rx='4' fill='%23F4DFCD' stroke='%23111' stroke-width='4'/%3E%3Cpath d='M6 22l10-12h32l10 12' fill='%23C7EBB3' stroke='%23111' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;700;800&family=Shadows+Into+Light&display=swap">
+<style>
+:root{--paper:#FAF5EF;--ink:#111;--body:#2B2A33;--dim:#5B5966;--mint:#C7EBB3;--peach:#F4DFCD;--pink:#FFD5F8;--hand:"Shadows Into Light",cursive}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--body);font-family:"Poppins",-apple-system,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column;min-height:100vh;padding:28px 20px}
+.wm{font-weight:700;font-size:1.15rem;letter-spacing:-.02em;color:var(--ink);text-align:center}
+.wm span{background:var(--mint);padding:2px 8px;border-radius:8px;margin-left:4px}
+main{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 0}
+.soon{display:inline-flex;align-items:center;gap:8px;background:#fff;border-radius:999px;padding:6px 14px 6px 12px;font-size:.8rem;font-weight:500;margin-bottom:26px}
+.soon i{width:8px;height:8px;border-radius:50%;background:#E9A23B;animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.25}}
+h1{font-weight:800;color:var(--ink);font-size:clamp(2.8rem,8.5vw,6rem);line-height:.98;letter-spacing:-.055em;margin:0 0 34px;max-width:14ch}
+h1 .hl{background:linear-gradient(transparent 55%,var(--mint) 55%);padding:0 .05em}
+p{font-size:1.1rem;line-height:1.6;max-width:32rem;margin:0}
+.notes{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 14px;margin-top:38px}
+.note{font-family:var(--hand);font-size:1.25rem;color:var(--ink);padding:6px 16px;border-radius:14px;box-shadow:0 10px 24px -18px rgba(17,17,17,.4)}
+.n1{background:var(--mint);transform:rotate(-4deg)}
+.n2{background:var(--pink);transform:rotate(3deg)}
+.n3{background:#fff;transform:rotate(-2deg)}
+footer{text-align:center;font-size:.82rem;color:var(--dim)}
+@media (prefers-reduced-motion:reduce){.soon i{animation:none}}
+</style>
+</head>
+<body>
+<div class="wm">Madrid<span>Unpacked</span></div>
+<main>
+  <div class="soon"><i></i>Coming soon</div>
+  <h1>We're still <span class="hl">unpacking.</span></h1>
+  <p>A first-hand guide to moving your family to Madrid's north side. It's nearly ready. It's in one of these boxes somewhere.</p>
+  <div class="notes" aria-hidden="true">
+    <span class="note n1">box 14 of 37</span>
+    <span class="note n2">the Wi-Fi guy said Tuesday</span>
+    <span class="note n3">which Tuesday?</span>
+  </div>
+</main>
+<footer>© 2026 Madrid Unpacked</footer>
+</body>
+</html>
