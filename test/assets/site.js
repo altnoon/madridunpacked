@@ -1030,6 +1030,8 @@
 
   // END YOUR MOVE
   // Floating Resume pill beside Saved (replaces the inline Continue reading cards).
+  // Switched off with Des on 9 Oct 2026: Saved covers the need. Set RESUME_FAB=true to restore.
+  var RESUME_FAB=false;
   (function(){
     var saved=document.querySelector('.saved-fab');if(!saved)return;
     var row=document.createElement('div');row.className='fab-row';saved.before(row);
@@ -1038,7 +1040,7 @@
     row.appendChild(rf);row.appendChild(saved);
     var go=rf.querySelector('.rf-go');
     function current(){var a=document.querySelector('.page.active');return a?a.id:'';}
-    window.muSyncResumeFab=function(){var r=readingStore();
+    window.muSyncResumeFab=function(){if(!RESUME_FAB){rf.hidden=true;return;}var r=readingStore();
       var valid=r && FILES[r.page] && !['home','guides','about','privacy'].includes(r.page) && typeof r.anchor==='string' && r.anchor.indexOf(r.page+'-')===0 && /^[a-z0-9-]+$/.test(r.anchor);
       rf.hidden=!valid || r.page===current();if(!valid)return;
       go.href=pageHref(r.page,r.anchor);rf.querySelector('.rf-guide').textContent=' · '+mobileLabels[r.page];
