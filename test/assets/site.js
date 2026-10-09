@@ -1091,3 +1091,11 @@
   wireHover(document);
   render();
 })();
+// Home: phone slider for the two-town snapshot; the switch follows the swipe.
+(function(){
+  var row=document.querySelector('.home-snapshot .towns'),sw=document.querySelector('.town-switch');if(!row||!sw)return;
+  var cards=row.querySelectorAll('.town-card'),btns=sw.querySelectorAll('[data-town-go]'),frame;
+  function set(i){btns.forEach(function(b,j){b.setAttribute('aria-pressed',String(i===j));});}
+  btns.forEach(function(b){b.addEventListener('click',function(){var i=Number(b.getAttribute('data-town-go')),pad=parseFloat(getComputedStyle(row).paddingLeft)||0,left=row.scrollLeft+cards[i].getBoundingClientRect().left-row.getBoundingClientRect().left-pad;row.scrollTo({left:left,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});set(i);});});
+  row.addEventListener('scroll',function(){cancelAnimationFrame(frame);frame=requestAnimationFrame(function(){var r=row.getBoundingClientRect(),mid=r.left+r.width/2,best=0,dist=Infinity;cards.forEach(function(c,i){var cr=c.getBoundingClientRect(),d=Math.abs(cr.left+cr.width/2-mid);if(d<dist){dist=d;best=i;}});set(best);});},{passive:true});
+})();
