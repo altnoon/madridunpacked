@@ -793,7 +793,7 @@
     dlg.addEventListener('click',function(e){if(e.target===dlg){var r=dlg.getBoundingClientRect();if(e.clientY<r.top||e.clientY>r.bottom||e.clientX<r.left||e.clientX>r.right)close(true);}});
     // links inside the result navigate; Discuss hands over to the Ask sheet
     dlg.addEventListener('click',function(e){if(e.target.closest('[data-picker-discuss]')){finish();return;}var a=e.target.closest('a[href]');if(a)finish();},true);
-    f.addEventListener('change',refresh);f.addEventListener('click',function(e){if(e.target.closest('[data-picker-reset]'))setTimeout(refresh);});
+    f.addEventListener('change',function(){refresh();saveSession('mu_ask_no_picker',false);});f.addEventListener('click',function(e){if(e.target.closest('[data-picker-reset]'))setTimeout(refresh);});
     function isPickerLink(h){return /(^|[#\/])town-picker$/.test(h||'');}
     document.addEventListener('click',function(e){var a=e.target.closest('a[href]');if(!a||dlg.contains(a)||!isPickerLink(a.getAttribute('href')))return;var samePage=STATIC?!/\.html/.test(a.getAttribute('href').split('#')[0])||/compare/.test(a.getAttribute('href').split('#')[0])&&location.pathname.indexOf('compare')>=0:sec.classList.contains('active');if(!samePage)return;e.preventDefault();open('link',a);},true);
     function fromHash(){if(isPickerLink(location.hash)&&active())setTimeout(function(){open('link');},50);}
@@ -883,7 +883,7 @@
   ];
   function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function where(){var p=document.querySelector('.page.active'),h=p && p.querySelector('h1');return h ? h.textContent.trim() : 'Madrid Unpacked';}
-  function questionContext(){return Object.keys(pickerAnswers).length===4 ? pickerRecommendation(pickerAnswers).title+' — '+pickerSummary(pickerAnswers) : '';}
+  function questionContext(){return Object.keys(pickerAnswers).length===4 && !readSession('mu_ask_no_picker',false) ? pickerRecommendation(pickerAnswers).title+' — '+pickerSummary(pickerAnswers) : '';}
   function message(){return 'Hi Patrick, a question (I’m reading '+where()+(SRC?'; found you via '+SRC:'')+'): '+draft.trim()+(askSection?'\n\nAbout this section: '+mobileLabels[askSection.page]+' — '+askSection.title:'')+(questionContext()?'\n\nOur town picker result: '+questionContext():'');}
   function questionLinks(){return {wa:WA_Q+'?text='+encodeURIComponent(message()),email:'mailto:'+MAIL+'?subject='+encodeURIComponent('A question about our move')+'&body='+encodeURIComponent(message())};}
   function links(){var a=document.getElementById('ask-wa'),b=document.getElementById('ask-em'),urls=questionLinks();if(a)a.href=urls.wa;if(b)b.href=urls.email;}
@@ -919,7 +919,7 @@
     }else{
       body='<div class="ask-body"><label for="ask-input" class="ask-lab">Your question</label><textarea id="ask-input" rows="3" placeholder="e.g. Two kids, 7 and 10. Which town would you look at first?">'+esc(draft)+'</textarea>'+
         (askSection?'<div class="ask-context"><b>About '+esc(mobileLabels[askSection.page])+'</b><p>'+esc(askSection.title)+'</p><button type="button" class="text-button" id="ask-clear-section">Remove section context</button></div>':'')+
-        (questionContext()?'<div class="ask-context"><b>Your town picker result is included</b><p>'+esc(questionContext())+'</p></div>':'')+
+        (questionContext()?(function(){var r=pickerRecommendation(pickerAnswers);return '<div class="ask-context ask-pk" data-type="'+r.type+'"><div class="ask-pk-top"><span>Attached: your town picker result</span><button type="button" class="text-button" id="ask-clear-picker">Remove</button></div><p class="ask-pk-title"><i aria-hidden="true"></i>'+esc(r.title)+'</p><ul class="ask-pk-chips">'+Object.keys(PICKER_OPTIONS).map(function(k){return '<li>'+esc(String(PICKER_OPTIONS[k][pickerAnswers[k]]).replace(/^(a|an) /,''))+'</li>';}).join('')+'</ul></div>';})():'')+
         '<p class="ask-err" id="ask-err" aria-live="polite"></p><div class="ask-send"><a id="ask-wa" class="b1 sm" href="#">Open WhatsApp</a><a id="ask-em" class="b2 sm" href="#">Open email</a></div><p class="ask-small">Your draft stays with you as you browse guides in this tab. You send the message in WhatsApp or your email app.</p><p class="ask-lab ask-lab2">Quick answers from the guides</p><div class="ask-quick">'+QUICK.map(function(q,i){var open=quickOpen===i;return '<div class="ask-faq"><button type="button" class="ask-starter" id="ask-question-'+i+'" data-i="'+i+'" aria-expanded="'+open+'" aria-controls="ask-answer-'+i+'">'+esc(q.label)+'<i aria-hidden="true">'+(open?'−':'+')+'</i></button><div class="ask-answer" id="ask-answer-'+i+'" role="region" aria-labelledby="ask-question-'+i+'"'+(open?'':' hidden')+'>'+q.answer.map(function(p){return '<p>'+esc(p)+'</p>';}).join('')+'</div></div>';}).join('')+'</div></div>';
     }
     root.innerHTML='<dialog class="ask-panel" aria-labelledby="ask-dialog-title"><div class="ask-head"><span class="ask-head-av" style="'+AV+'"></span><div><div class="ask-title" id="ask-dialog-title">'+(booking?'Arrange your planning call':'Ask Patrick')+'</div><div class="ask-sub">He reads every question himself.</div></div><button type="button" id="ask-close" aria-label="Close">×</button></div>'+body+'</dialog>';
@@ -931,6 +931,7 @@
     panel.addEventListener('click',function(e){if(e.target===panel){var r=panel.getBoundingClientRect();if(e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom)closeAsk();}});
     document.getElementById('ask-close').onclick=closeAsk;
     var clearSection=document.getElementById('ask-clear-section');if(clearSection)clearSection.onclick=function(){askSection=null;saveSession('mu_question_section',null);render();};
+    var clearPicker=document.getElementById('ask-clear-picker');if(clearPicker)clearPicker.onclick=function(){saveSession('mu_ask_no_picker',true);render();};
     var retry=document.getElementById('handoff-retry');
     if(retry)retry.onclick=function(e){if(sentVia==='whatsapp'){e.preventDefault();window.open(this.href,'_blank','noopener');}track(booking?'booking_handoff':'contact_handoff',{channel:sentVia,place:'handoff_retry'});};
     var edit=document.getElementById('ask-edit');if(edit)edit.onclick=function(){view='open';askFocusQuestion=true;render();};
