@@ -544,8 +544,40 @@
   .ask-again{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
   .ask-again button{background:#fff;border:1.5px solid #F4DFCD;color:#111;padding:7px 11px;border-radius:100px;font-size:12px;font-family:Poppins,sans-serif;cursor:pointer}
   .ask-again button:hover{background:#C7EBB3}
-  @media(max-width:720px){.towns{grid-template-columns:1fr!important}.towns .track{display:none!important}}
-  @media(max-width:720px){a.card.towns > div{padding:22px}}
+  /* Home: two-town snapshot */
+  .home-snapshot{max-width:1180px;margin:0 auto;padding:72px clamp(16px,5vw,32px)}
+  .snap-head{margin-bottom:32px}
+  .snap-head h2{font-family:'Poppins',sans-serif;font-size:clamp(30px,5vw,48px);font-weight:700;letter-spacing:-.035em;line-height:1.06;color:#111;margin:0}
+  .snap-head p{font-size:18px;line-height:1.55;color:#3B3B3B;margin:14px 0 0;max-width:640px}
+  .towns{display:grid;grid-template-columns:1fr 96px 1fr;grid-template-rows:repeat(5,auto);align-items:stretch}
+  .town-card{grid-row:span 5;display:grid;grid-template-rows:subgrid;row-gap:0;padding:32px;border-radius:28px;color:#111;text-decoration:none;transition:transform .2s ease,box-shadow .2s ease}
+  .town-card.tc{background:#F4DFCD}.town-card.cv{background:#C7EBB3}
+  .town-card:hover,.town-card:focus-visible{transform:translateY(-3px);box-shadow:0 14px 30px rgba(17,17,17,.10)}
+  .town-kicker{display:inline-block;justify-self:start;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#111;background:rgba(255,255,255,.6);border-radius:100px;padding:6px 12px;margin-bottom:16px}
+  .town-card h3{font-family:'Poppins',sans-serif;font-size:clamp(28px,3.4vw,38px);font-weight:700;letter-spacing:-.035em;line-height:1.05;margin:0 0 12px}
+  .town-best{font-size:17px;line-height:1.5;color:#2B2B2B;margin:0 0 22px}
+  .town-best b{font-weight:700;color:#111}
+  .town-stats{margin:0 0 24px;padding:0;border-top:1.5px solid rgba(17,17,17,.14)}
+  .town-stats>div{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:12px;padding:11px 0;border-bottom:1.5px solid rgba(17,17,17,.14)}
+  .town-stats dt{font-size:14px;color:#4A4A4A;margin:0}
+  .town-stats dd{font-size:15px;font-weight:600;line-height:1.4;margin:0;text-align:right}
+  .town-go{align-self:end;font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:6px;min-height:44px}
+  .town-card:hover .town-go{text-decoration:underline;text-underline-offset:3px}
+  .towns .track{grid-row:1/span 5;grid-column:2;position:relative;display:flex;align-items:center;justify-content:center}
+  .towns .track::before{content:"";position:absolute;left:-6px;right:-6px;top:50%;height:2px;margin-top:-1px;background:#111}
+  .towns .track b{position:relative;display:flex;flex-direction:column;align-items:center;background:#111;color:#fff;border-radius:100px;padding:9px 14px 8px;font-weight:700;font-size:17px;line-height:1;white-space:nowrap}
+  .towns .track small{font-weight:500;font-size:11px;letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-top:4px}
+  .snap-note{margin:18px 0 0;padding:16px 20px;border-radius:20px;background:#fff;font-size:16px;line-height:1.55;color:#3B3B3B}
+  .snap-note b{color:#111}.snap-note span{display:block;font-size:13px;color:#6B6B6B;margin-top:4px}
+  @media(max-width:860px){
+    .towns{grid-template-columns:1fr;grid-template-rows:none}
+    .town-card{grid-row:auto;grid-template-rows:none;padding:24px;border-radius:24px}
+    .towns .track{grid-row:auto;grid-column:auto;height:64px}
+    .towns .track::before{left:50%;right:auto;top:0;bottom:0;width:2px;height:auto;margin:0 0 0 -1px}
+    .town-best{font-size:16px;margin-bottom:18px}
+    .snap-head p{font-size:16px}
+  }
+  @media(max-width:380px){.town-stats>div{grid-template-columns:1fr;gap:2px}.town-stats dd{text-align:left}}
   @media(max-width:640px){.nav{padding:16px}.nav-links{gap:14px;font-size:14px}.wm{font-size:18px}.hw{font-size:16px}}
 
 
@@ -688,11 +720,8 @@ button.b2{font-family:inherit;border:0}.share-btns button{cursor:pointer}
   #home .hero-browse{text-align:center}
   #home .cred{grid-template-columns:minmax(0,1fr)!important;gap:8px!important;padding-bottom:12px!important}
   #home .cred>div{padding:14px 16px!important;border-radius:16px!important;font-size:14px!important}
-  #home .home-snapshot{padding-top:32px!important;padding-bottom:32px!important}
-  #home .towns{gap:12px!important}
-  #home .towns>div:not(.track){padding:20px!important;border-radius:20px!important}
-  #home .towns h3{font-size:24px!important}
-  #home .towns p{font-size:14px!important;line-height:1.65}
+  #home .home-snapshot{padding-top:40px;padding-bottom:40px}
+  #home .town-card{padding:20px}
   #home .snapshot-cta{padding:14px 16px!important;border-radius:18px!important;min-height:56px}
   #home .snapshot-cta>span:first-child{font-size:14px!important;line-height:1.45}
   #home .snapshot-cta>span:last-child{width:36px!important;height:36px!important}
