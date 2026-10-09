@@ -506,6 +506,19 @@ body:has(#guides.page.active) .saved-fab{display:none!important}
     .tbl tbody td[data-l]:not(:first-child)::before{content:attr(data-l);display:block;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dimmer);margin-bottom:2px}
     .tbl.towns-tbl tbody td:nth-child(2)::before{display:inline-block;background:var(--peach);color:#111;border-radius:100px;padding:2px 8px;margin:0 0 4px}
     .tbl.towns-tbl tbody td:nth-child(3)::before{display:inline-block;background:var(--green);color:#111;border-radius:100px;padding:2px 8px;margin:4px 0 4px}
+    /* towns table: side-by-side town columns on phones */
+    .tbl.towns-tbl{padding:12px 16px 6px}
+    .tbl.towns-tbl thead{display:block}
+    .tbl.towns-tbl thead tr{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 0 6px}
+    .tbl.towns-tbl thead th{display:block;padding:0;border:0}
+    .tbl.towns-tbl thead th:first-child{display:none}
+    .tbl.towns-tbl thead th span{display:block;text-align:center;border-radius:12px;padding:10px 12px;font-size:15px;font-weight:700;letter-spacing:0;text-transform:none;color:var(--ink)}
+    .tbl.towns-tbl tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 0 14px}
+    .tbl.towns-tbl tbody td:first-child{grid-column:1/-1;font-size:15px;padding:0 0 2px}
+    .tbl.towns-tbl tbody td:nth-child(2),.tbl.towns-tbl tbody td:nth-child(3){padding:12px;border-radius:12px;color:var(--ink);font-size:14px;line-height:1.5;overflow-wrap:break-word;hyphens:auto}
+    .tbl.towns-tbl tbody td:nth-child(2){background:var(--peach)}
+    .tbl.towns-tbl tbody td:nth-child(3){background:var(--green)}
+    .tbl.towns-tbl tbody td[data-l]:not(:first-child)::before{display:none}
   }
   /* ask sheet on phones */
   #ask-backdrop{position:fixed;inset:0;background:rgba(17,17,17,.35);z-index:39;display:none}
