@@ -309,6 +309,7 @@
       card.innerHTML='<div class="resume-heading"><b>Continue reading</b><button type="button" class="text-button" data-forget-reading aria-label="Clear saved reading position">Clear</button></div><p><strong>'+esc(mobileLabels[saved.page])+'</strong><span>'+esc(saved.chapter || '')+'</span></p><a class="resume-link" href="'+pageHref(saved.page,saved.anchor)+'">Resume guide →</a>';
       card.querySelector('button').onclick=function(){readingStore(null);refreshResume();refreshPersonal();};
     });
+    if(window.muSyncResumeFab)window.muSyncResumeFab();
   }
   var homeCatalog=document.querySelector('#home [data-home-resume]');if(homeCatalog){var resume=document.createElement('div');resume.className='resume-card';resume.setAttribute('data-resume','');resume.hidden=true;homeCatalog.appendChild(resume);}
   refreshResume();
@@ -1028,6 +1029,25 @@
   document.querySelectorAll('[data-saved-toggle]').forEach(function(button){button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','saved-tray');button.removeAttribute('aria-expanded');button.onclick=function(){openSavedTray(false);};});
 
   // END YOUR MOVE
+  // Floating Resume pill beside Saved (replaces the inline Continue reading cards).
+  (function(){
+    var saved=document.querySelector('.saved-fab');if(!saved)return;
+    var row=document.createElement('div');row.className='fab-row';saved.before(row);
+    var rf=document.createElement('div');rf.className='resume-fab';rf.hidden=true;
+    rf.innerHTML='<a class="rf-go" href="#"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M3 4.5V9h4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7.5V12l3 2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="rf-label">Resume<span class="rf-guide"></span></span></a><button type="button" class="rf-clear" aria-label="Clear saved reading position">×</button>';
+    row.appendChild(rf);row.appendChild(saved);
+    var go=rf.querySelector('.rf-go');
+    function current(){var a=document.querySelector('.page.active');return a?a.id:'';}
+    window.muSyncResumeFab=function(){var r=readingStore();
+      var valid=r && FILES[r.page] && !['home','guides','about','privacy'].includes(r.page) && typeof r.anchor==='string' && r.anchor.indexOf(r.page+'-')===0 && /^[a-z0-9-]+$/.test(r.anchor);
+      rf.hidden=!valid || r.page===current();if(!valid)return;
+      go.href=pageHref(r.page,r.anchor);rf.querySelector('.rf-guide').textContent=' · '+mobileLabels[r.page];
+      go.setAttribute('aria-label','Resume '+mobileLabels[r.page]+(r.chapter?': '+r.chapter:''));go.title=(r.chapter||'');};
+    go.addEventListener('click',function(){track('resume_click',{place:'fab'});});
+    rf.querySelector('.rf-clear').addEventListener('click',function(){readingStore(null);refreshResume();refreshPersonal();});
+    window.addEventListener('hashchange',function(){setTimeout(window.muSyncResumeFab);});
+    window.muSyncResumeFab();
+  })();
   route();
   if(window.innerWidth<=640 && /(?:^|[?&])reader=1(?:&|$)/.test(location.search)){var requested=document.querySelector('.page.active'),requestedHeading=requested && requested.querySelector('[id="'+location.hash.slice(1).replace(/[^a-z0-9-]/g,'')+'"]');if(requestedHeading && requestedHeading.tagName==='H2' && requested.querySelector('[data-toc]'))openReader(requested,requestedHeading,requested.querySelector('.toc-mobile summary'));}
   wireHover(document);
