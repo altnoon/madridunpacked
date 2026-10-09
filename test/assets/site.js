@@ -726,6 +726,49 @@
     update(false);
   });
 
+  // Town picker lives in a dialog: first-visit intro, floating pill (<1024px), sidebar entry (>=1024px).
+  (function(){
+    var sec=document.getElementById('compare'),f=sec&&sec.querySelector('#town-picker');if(!f||typeof HTMLDialogElement==='undefined')return;
+    var wrap=f.closest('.pk-wrap'),dlg=document.createElement('dialog');dlg.className='picker-dialog';dlg.setAttribute('aria-label','Which town fits us?');
+    dlg.innerHTML='<button type="button" class="pk-close" aria-label="Close">×</button><div class="pk-intro" hidden><p class="pk-intro-eb">Before you read</p><h2>Which town fits your family?</h2><p>Four quick questions about budget, how you want to land, schools and the commute. You get a starting point, not a verdict.</p><div class="pk-intro-actions"><button type="button" class="b1" data-pk-start>Start · 4 questions</button><button type="button" class="pk-skip" data-pk-skip>Skip for now</button></div><p class="pk-intro-note"></p></div>';
+    dlg.appendChild(f);document.body.appendChild(dlg);if(wrap)wrap.hidden=true;
+    var intro=dlg.querySelector('.pk-intro'),opener=null,overflow='';
+    var fab=document.createElement('button');fab.type='button';fab.className='pk-fab';fab.setAttribute('aria-haspopup','dialog');fab.innerHTML='<i aria-hidden="true"></i><span></span>';document.body.appendChild(fab);
+    var side=document.createElement('button');side.type='button';side.className='toc-picker';side.setAttribute('aria-haspopup','dialog');side.innerHTML='<i aria-hidden="true"></i><span><small>Which town fits us?</small><b></b></span>';
+    var toc=sec.querySelector('[data-toc]');if(toc)toc.insertBefore(side,toc.firstChild);
+    function wide(){return window.innerWidth>=1024;}
+    function active(){return sec.classList.contains('active')||STATIC;}
+    function state(){var a=cleanAnswers(readSession('mu_picker',{})||{}),n=Object.keys(a).length;if(n<4)return {n:n,label:n?'Which town fits? '+n+'/4':'Which town fits you?',short:n?n+' of 4 answered':'4 quick questions',type:''};var r=pickerRecommendation(a),t={tc:'Tres Cantos',cv:'Colmenar Viejo'}[r.type]||(a.school==='intl'&&/Colmenar/.test(r.title)?'Colmenar + TC school':'Both towns');return {n:4,label:'Your fit: '+t,short:t,type:r.type};}
+    function refresh(){var st=state();fab.querySelector('span').textContent=st.label;fab.dataset.type=st.type;fab.setAttribute('aria-label',st.n===4?st.label+'. Open the town picker':'Open the town picker: '+st.label);side.querySelector('b').textContent=st.n===4?st.short:(st.n?st.short+' →':'4 quick questions →');side.dataset.type=st.type;fab.hidden=!active();}
+    function open(how,src){if(dlg.open)return;opener=src||document.activeElement;var isIntro=how==='intro';intro.hidden=!isIntro;f.hidden=isIntro;
+      dlg.querySelector('.pk-intro-note').textContent=wide()?'You can open it any time from the page index.':'It stays one tap away at the bottom of the screen.';
+      overflow=document.body.style.overflow;document.body.style.overflow='hidden';dlg.classList.remove('minimizing');dlg.showModal();
+      var target=isIntro?dlg.querySelector('.pk-intro h2'):(f.querySelector('fieldset.step-active legend')||f.querySelector('.pk-out'));if(target){if(!target.hasAttribute('tabindex')&&!/BUTTON|A/.test(target.tagName))target.setAttribute('tabindex','-1');target.focus({preventScroll:true});}
+      track(isIntro?'picker_intro_shown':'picker_open',{place:how||'link'});}
+    function finish(){dlg.classList.remove('minimizing');if(dlg.open)dlg.close();document.body.style.overflow=overflow;refresh();}
+    function close(minimize){if(!dlg.open)return;var target=wide()?side:fab,reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(minimize&&!reduce&&target.offsetParent&&dlg.animate){var a=dlg.getBoundingClientRect(),b=target.getBoundingClientRect(),dx=(b.left+b.width/2)-(a.left+a.width/2),dy=(b.top+b.height/2)-(a.top+a.height/2);dlg.classList.add('minimizing');
+        var anim=dlg.animate([{transform:'none',opacity:1},{transform:'translate('+dx+'px,'+dy+'px) scale(.12)',opacity:0}],{duration:340,easing:'cubic-bezier(.4,0,.2,1)'});anim.onfinish=function(){finish();target.classList.remove('pk-arrive');void target.offsetWidth;target.classList.add('pk-arrive');target.focus({preventScroll:true});};}
+      else {finish();if(opener&&opener.isConnected)opener.focus({preventScroll:true});}}
+    fab.addEventListener('click',function(){open('fab',fab);});side.addEventListener('click',function(){open('index',side);});
+    dlg.querySelector('[data-pk-start]').addEventListener('click',function(){intro.hidden=true;f.hidden=false;var l=f.querySelector('fieldset.step-active legend');if(l){l.setAttribute('tabindex','-1');l.focus({preventScroll:true});}track('picker_intro_start');});
+    dlg.querySelector('[data-pk-skip]').addEventListener('click',function(){track('picker_intro_skip');close(true);});
+    dlg.querySelector('.pk-close').addEventListener('click',function(){close(true);});
+    dlg.addEventListener('cancel',function(e){e.preventDefault();close(true);});
+    dlg.addEventListener('click',function(e){if(e.target===dlg){var r=dlg.getBoundingClientRect();if(e.clientY<r.top||e.clientY>r.bottom||e.clientX<r.left||e.clientX>r.right)close(true);}});
+    // links inside the result navigate; Discuss hands over to the Ask sheet
+    dlg.addEventListener('click',function(e){if(e.target.closest('[data-picker-discuss]')){finish();return;}var a=e.target.closest('a[href]');if(a)finish();},true);
+    f.addEventListener('change',refresh);f.addEventListener('click',function(e){if(e.target.closest('[data-picker-reset]'))setTimeout(refresh);});
+    function isPickerLink(h){return /(^|[#\/])town-picker$/.test(h||'');}
+    document.addEventListener('click',function(e){var a=e.target.closest('a[href]');if(!a||dlg.contains(a)||!isPickerLink(a.getAttribute('href')))return;var samePage=STATIC?!/\.html/.test(a.getAttribute('href').split('#')[0])||/compare/.test(a.getAttribute('href').split('#')[0])&&location.pathname.indexOf('compare')>=0:sec.classList.contains('active');if(!samePage)return;e.preventDefault();open('link',a);},true);
+    function fromHash(){if(isPickerLink(location.hash)&&active())setTimeout(function(){open('link');},50);}
+    window.addEventListener('hashchange',function(){refresh();fromHash();});
+    refresh();
+    if(isPickerLink(location.hash))fromHash();
+    else if(active()&&!readLocal('mu_picker_intro',false)&&state().n===0&&(!location.hash||/^#compare\/?$/.test(location.hash))){
+      setTimeout(function(){if(dlg.open||document.querySelector('dialog[open]')||!active())return;writeLocal('mu_picker_intro',true);open('intro');},1400);}
+  })();
+
   // ---- Spanish words explained in place ----
   var GLOSS = [
     [/\bpadr[oó]n\b/i, 'padrón', 'Registering your address at the town hall. You need it for a school place, the health card and most local paperwork.'],
